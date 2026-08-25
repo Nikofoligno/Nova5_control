@@ -1,0 +1,18 @@
+# Python gateway
+nova5_gateway/.venv/
+nova5_gateway/__pycache__/
+nova5_gateway/**/*.py[cod]
+
+# ROS/colcon products
+nova5_ros_ws/build/
+nova5_ros_ws/install/
+nova5_ros_ws/log/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Git metadata preserved while vendoring the Dobot ROS sources.
+.vendor-dobot-git-backup/

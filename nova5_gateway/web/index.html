@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#06111e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/assets/manifest.webmanifest" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <title>Nova5 Field Control</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">NOVA5 · FIELD CONTROL</p>
+          <h1>Manipolatore</h1>
+        </div>
+        <div class="connection">
+          <i id="connection-dot"></i
+          ><span id="connection-label">Connessione...</span>
+        </div>
+      </header>
+      <section class="simulation-note">
+        <b>SIMULAZIONE</b><span>Il gateway non comanda hardware reale.</span>
+      </section>
+      <section class="safety-card">
+        <div class="safety-copy">
+          <span class="section-label">CONSENSO MOVIMENTO</span
+          ><strong id="arm-status">Braccio bloccato</strong
+          ><small id="platform-status">B2 stabile · interlock pronto</small>
+        </div>
+        <button id="arm-button" class="arm-button">ABILITA ARM</button>
+      </section>
+
+      <section id="control-tab" class="tab-page active">
+        <div
+          class="mode-switch"
+          role="tablist"
+          aria-label="Metodo di controllo"
+        >
+          <button class="mode active" data-mode="axis">Assi TCP</button
+          ><button class="mode" data-mode="joint">Giunti</button>
+        </div>
+        <div class="motion-mode" role="group" aria-label="Modalità di jog">
+          <span>COMANDO</span>
+          <button class="motion-mode-button active" data-motion-mode="single">
+            Click singolo
+          </button>
+          <button class="motion-mode-button" data-motion-mode="hold">
+            Tieni premuto
+          </button>
+        </div>
+        <p class="hold-help">
+          In modalità pressione, il rilascio interrompe subito il jog e mantiene ARM abilitato.
+        </p>
+        <article id="axis-panel" class="control-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">JOG CARTESIANO</span>
+              <h2>Muovi l'end-effector</h2>
+            </div>
+            <label
+              >Passo
+              <select id="axis-step">
+                <option value="0.001">1 mm</option>
+                <option value="0.005" selected>5 mm</option>
+                <option value="0.01">10 mm</option>
+                <option value="0.025">25 mm</option>
+              </select></label
+            >
+          </div>
+          <p class="help">
+            Ogni tocco sposta il TCP nel riferimento base del braccio. Per le
+            rotazioni il passo e' 2°. I movimenti sono riferiti alla base del braccio.
+          </p>
+          <div id="translation-controls" class="control-grid"></div>
+          <div class="rotation-row">
+            <span class="section-label">ORIENTAMENTO TCP</span>
+            <div id="rotation-controls" class="rotation-controls"></div>
+          </div>
+        </article>
+        <article id="joint-panel" class="control-card hidden">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">JOG ARTICOLARE</span>
+              <h2>Muovi un singolo giunto</h2>
+            </div>
+            <label
+              >Passo
+              <select id="joint-step">
+                <option value="0.03">fine</option>
+                <option value="0.05" selected>normale</option>
+                <option value="0.08">ampio</option>
+              </select></label
+            >
+          </div>
+          <p class="help">
+            Usa il jog articolare per recuperare una configurazione o gestire
+            singolarita'.
+          </p>
+          <div id="joint-controls" class="joint-controls"></div>
+        </article>
+        <article class="control-card gripper-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">END-EFFECTOR</span>
+              <h2>Pinza</h2>
+            </div>
+            <strong id="gripper-state">Aperta</strong>
+          </div>
+          <div class="button-pair">
+            <button id="open-gripper" class="secondary">Apri</button
+            ><button id="close-gripper" class="primary">Chiudi</button>
+          </div>
+        </article>
+        <article class="control-card recovery-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">RECUPERO POSA</span>
+              <h2>Rientro del braccio</h2>
+            </div>
+          </div>
+          <div class="button-pair">
+            <button data-pose="home" class="secondary">Home</button>
+            <button data-pose="safe" class="safe-pose">Posa sicura</button>
+          </div>
+          <p class="help">
+            La posa sicura e' valida solo nel simulatore finche' montaggio,
+            pinza e limiti sul B2 non sono certificati.
+          </p>
+        </article>
+      </section>
+
+      <section id="mission-tab" class="tab-page">
+        <article class="control-card mission-intro">
+          <span class="section-label">WORKFLOW GUIDATO</span>
+          <h2>Raccogli e trasporta</h2>
+          <p>
+            Il B2 deve essere fermo e stabile prima di estendere il braccio.
+            Ogni posa e' un punto di verifica operatore.
+          </p>
+        </article>
+        <ol class="mission-list">
+          <li>
+            <span>1</span>
+            <div>
+              <b>Preparazione</b
+              ><small>Porta il braccio fuori dalla posa di trasporto.</small>
+            </div>
+            <button data-pose="ready">Ready</button>
+          </li>
+          <li>
+            <span>2</span>
+            <div>
+              <b>Avvicinamento</b
+              ><small
+                >Controlla visuale e usa il jog TCP per l'ultimo tratto.</small
+              >
+            </div>
+            <button data-pose="pick">Pick</button>
+          </li>
+          <li>
+            <span>3</span>
+            <div>
+              <b>Presa</b><small>Chiudi la pinza e verifica il carico.</small>
+            </div>
+            <button id="mission-grip">Chiudi</button>
+          </li>
+          <li>
+            <span>4</span>
+            <div>
+              <b>Trasporto</b
+              ><small>Ritrai il braccio prima di far ripartire il B2.</small>
+            </div>
+            <button data-pose="carry">Carry</button>
+          </li>
+          <li>
+            <span>5</span>
+            <div>
+              <b>Deposito</b
+              ><small
+                >Usa questa posa per scaricare a terra o sulla schiena.</small
+              >
+            </div>
+            <button data-pose="place">Place</button>
+          </li>
+        </ol>
+        <p class="calibration-note">
+          Le pose sono simulatorie: dovranno essere calibrate con quota di
+          montaggio, pinza e area utile sul dorso del B2.
+        </p>
+      </section>
+
+      <section id="status-tab" class="tab-page">
+        <article class="control-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">INTERLOCK PIATTAFORMA</span>
+              <h2>Stato B2</h2>
+            </div>
+          </div>
+          <label class="switch-row"
+            ><span>B2 stabile / fermo</span
+            ><input id="platform-toggle" type="checkbox" checked /><i></i
+          ></label>
+          <p class="help">
+            Quando il B2 e' in movimento, il gateway annulla il movimento e
+            disabilita ARM.
+          </p>
+        </article>
+        <article class="control-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">TELEMETRIA</span>
+              <h2>Giunti attuali</h2>
+            </div>
+            <small id="last-command">idle</small>
+          </div>
+          <div id="joint-values" class="joint-values"></div>
+          <p id="error-message" class="error" role="alert"></p>
+        </article>
+      </section>
+    </main>
+    <button id="stop-button" class="floating-stop">STOP</button>
+    <nav class="bottom-nav" aria-label="Navigazione principale">
+      <button class="nav-item active" data-tab="control">
+        <span>⌁</span>Controllo</button
+      ><button class="nav-item" data-tab="mission">
+        <span>◇</span>Missione</button
+      ><button class="nav-item" data-tab="status"><span>◌</span>Stato</button>
+    </nav>
+    <script src="/assets/app.js"></script>
+  </body>
+</html>

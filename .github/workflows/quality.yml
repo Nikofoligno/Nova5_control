@@ -1,0 +1,20 @@
+name: Quality checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check gateway syntax
+        run: python -m py_compile nova5_gateway/app.py nova5_gateway/robot_config.py nova5_gateway/ros_driver.py
+      - name: Check launcher syntax
+        run: bash -n scripts/*.sh

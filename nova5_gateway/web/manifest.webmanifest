@@ -1,0 +1,9 @@
+{
+  "name": "Nova5 Field Control",
+  "short_name": "Nova5 Control",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#06111e",
+  "theme_color": "#06111e",
+  "lang": "it"
+}
